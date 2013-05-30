@@ -1,8 +1,11 @@
 
 use lib 'lib/';
-use Net::OECU::LAN::OecuWifi;
+use Net::OECU::LAN::MC2Wifi;
+use Config::Pit;
 
-our $network = Net::OECU::LAN::OecuWifi->new(
+my $config = Config::Pit->piy_get("odenwlan");
+
+my $network = Net::OECU::LAN::MC2Wifi->new(
 	username => '',
 	password => '',
 );

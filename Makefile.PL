@@ -13,6 +13,7 @@ WriteMakefile(
 		'Net::SSLeay' => 0,
 		'LWP::UserAgent' => 0,
 		'LWP::Protocol::https' => 0,
+		'Config::Pit' => 0,
 		'Data::Dumper' => 0,
 	}
 );

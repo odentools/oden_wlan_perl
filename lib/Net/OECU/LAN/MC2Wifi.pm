@@ -1,4 +1,4 @@
-package Net::OECU::LAN::OecuWifi;
+package Net::OECU::LAN::MC2Wifi;
 #############################################
 # OECU LAN connection module for OECU wifi
 # (C) OdenTools Project - 2013.
