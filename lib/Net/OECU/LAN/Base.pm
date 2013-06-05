@@ -1,6 +1,6 @@
-package Net::OECU::LAN::MC2Wifi;
+package Net::OECU::LAN::Base;
 #############################################
-# OECU LAN connection module for OECU wifi
+# OECU LAN connection Base module
 # (C) OdenTools Project - 2013.
 #############################################
 
@@ -9,7 +9,6 @@ use warnings;
 
 use URI;
 use LWP::UserAgent;
-use Data::Dumper;
 
 sub new {
 	my ($class, %hash) = @_;
@@ -72,7 +71,7 @@ sub login {
 	# Check url
 	$self->_ua_unset_proxy();
 	my $response = $self->{ua}->get('http://www.osakac.ac.jp/');
-	unless ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') { # If logged-in already
+	unless ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') { # 未ログイン
 		return -1;
 	}
 
@@ -112,36 +111,11 @@ sub login {
 		die '[Error] Login error : '.$response->status_line."\n";
 	}
 
-	for(my $redirect = 0; $redirect < 5; $redirect += 1) {
-		if ($response->as_string =~ /window\.location\.href\=\'(http\:\/\/[^\']+)\'/){
-			# Detect second redirect with JavaScript
-			my $redirect_url = $1;
-
-			# Request
-			print "\n Request 2nd redirect... \n";
-			$response = $self->{ua}->get( $redirect_url );
-		} elsif ($response->as_string =~ /window\.location\.href\=\'\/login([^\']+)\'/) {
-			# Detect final redirect with JavaScript
-			my $redirect_url = $login_url . $1;
-
-			# Request
-			print "\n Request 3rd redirect... \n";
-			$response = $self->{ua}->get( $redirect_url );
-			print $response->as_string;
-		} elsif ($response->as_string =~ /window\.location\.href\=\'\/([^\']+)\'/) {
-			# Detect other redirect with JavaScript
-			my $redirect_url = $1;
-
-			# Request
-			print "\n Request other redirect... \n";
-			$response = $self->{ua}->get( $redirect_url );
-			print $response->as_string;
-			last;
-		} else {
-			print "\nFALSE\n";
-			print $response->as_string;
-			print "\n";
-		}
+	if($response->as_string =~ /window\.location\.href\=\'(http\:\/\/[^\']+)\'/){
+		# Detect last redirect with JavaScript
+		my $last_url = $1;
+		print "$last_url\n";
+		$response = $self->{ua}->get( $last_url );
 	}
 
 	return 1;
@@ -159,48 +133,26 @@ sub logout {
 	return 1;
 }
 
-# is_logged_in() - Check currently logged-in. Return: 1 = true, 0 = false, -1 = other network
+# is_logged_in() - Check currently logged-in. Return: 1 = true, 0 = false
 sub is_logged_in {
 	my $self = shift;
-
-	$self->_ua_set_proxy();
-	my $response = $self->{ua}->get('https://google.com/');
-	if ($response->is_error){
-		# Retry with unset proxy
-		$self->_ua_unset_proxy();
-		$response = $self->{ua}->get('https://google.com/');
-
-		if ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') {
-			# Not logged-in
-			return 0;
-		} elsif ($response->is_error){
-			# Not logged-in
-			return 0;
-		} else {
-			# Logged-in with MC2Wifi
-			return 1;
-		}
-	} else {
-		# Connected with other network
-		return -1;
+	my $response = $self->{ua}->get('http://www.osakac.ac.jp/');
+	if ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') { # 未ログイン
+		return 0;
 	}
+	return 1;
 }
 
 # env_set_proxy() - Set the proxy to ENV
 sub env_set_proxy {
 	my $self = shift;
-	my $proxy_url = 'http://172.25.250.41:8080';
-	`export HTTP_PROXY=\"$proxy_url\"`;
-	`export HTTPS_PROXY=\"$proxy_url\"`;
-	`export FTP_PROXY=\"$proxy_url\"`;
+
 }
 
 # env_set_proxy() - Unset the proxy to ENV
 sub env_unset_proxy {
 	my $self = shift;
-	eval `export HTTP_PROXY=\"\"`;
-	eval `export HTTPS_PROXY=\"\"`;
-	eval `export FTP_PROXY=\"\"`;
+
 }
 
 # _ua_set_proxy

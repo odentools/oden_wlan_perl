@@ -15,5 +15,6 @@ WriteMakefile(
 		'LWP::Protocol::https' => 0,
 		'Config::Pit' => 0,
 		'Data::Dumper' => 0,
+		'YAML' => 0,
 	}
 );
