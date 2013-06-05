@@ -163,17 +163,18 @@ sub logout {
 sub is_logged_in {
 	my $self = shift;
 
-	$self->_ua_set_proxy();
-	my $response = $self->{ua}->get('https://google.com/');
-	if ($response->is_error){
-		# Retry with unset proxy
-		$self->_ua_unset_proxy();
-		$response = $self->{ua}->get('https://google.com/');
+	$self->_ua_unset_proxy();
+	my $response = $self->{ua}->get('http://google.com/');
 
-		if ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') {
-			# Not logged-in
-			return 0;
-		} elsif ($response->is_error){
+	if ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') {
+		# Not logged-in
+		return 0;
+	} elsif ($response->is_error || 5<= $response->redirects){ # Detect error or redirect-loop
+		# Retry with unset proxy
+		$self->_ua_set_proxy();
+		$response = $self->{ua}->get('http://google.com/');
+
+		if ($response->is_error || $response->title eq '無線LAN 利用者認証ページ') {
 			# Not logged-in
 			return 0;
 		} else {
@@ -189,18 +190,36 @@ sub is_logged_in {
 # env_set_proxy() - Set the proxy to ENV
 sub env_set_proxy {
 	my $self = shift;
-	my $proxy_url = 'http://172.25.250.41:8080';
-	`export HTTP_PROXY=\"$proxy_url\"`;
-	`export HTTPS_PROXY=\"$proxy_url\"`;
-	`export FTP_PROXY=\"$proxy_url\"`;
+	my $proxy_host = '172.25.250.41';
+	my $proxy_port = '8080';
+
+	my $confpath = '/home/'. getpwuid($>) . '/.gconf';
+
+	#`gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type string --set /system/proxy/mode \"manual\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
 }
 
 # env_set_proxy() - Unset the proxy to ENV
 sub env_unset_proxy {
 	my $self = shift;
-	eval `export HTTP_PROXY=\"\"`;
-	eval `export HTTPS_PROXY=\"\"`;
-	eval `export FTP_PROXY=\"\"`;
+	my $proxy_host = '';
+	my $proxy_port = '';
+
+	my $confpath = '/home/'. getpwuid($>) . '/.gconf';
+	
+	#`gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type string --set /system/http_proxy/host \"\"`;
+
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
+	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
 }
 
 # _ua_set_proxy
