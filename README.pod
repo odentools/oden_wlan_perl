@@ -2,14 +2,23 @@
 
 oden_wlan_perl - The automatic login tool and library for OECU WiFi
 
+=head1 REQUIREMENT
+
+=over 4
+
+=item * perl - 5.1x or later
+
+=back
+
 =head1 SYNOPSIS
 
-=head1 INSTALLATION (from GitHub)
+=head2 Installation
 
   $ git clone git://github.com/odentools/oden_wlan_perl.git
-  $ cpanm ./oden_wlan_perl
+  $ sudo cpan App::cpanminus
+  $ sudo cpanm ./oden_wlan_perl
 
-=head1 Initial configuration
+=head2 Initial configuration
 
   $ perl odenwlan.pl --init
   
@@ -26,6 +35,10 @@ oden_wlan_perl - The automatic login tool and library for OECU WiFi
   
   -- Connect to MC2Wifi --
   ~~~~~
+
+=head2 How to use in every day
+
+  $ perl odenwlan.pl
 
 =head1 COPYRIGHT AND LICENSE
 
