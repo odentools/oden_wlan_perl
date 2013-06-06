@@ -36,8 +36,10 @@ foreach(@ARGV){
 		$user->{username} = $1;
 	} elsif ($_ =~ /--password=(.+)/i){
 		$user->{password} = $1;
-	} elsif ($_ =~ /--unsetproxy/i){
-		$mode = 'unset_proxy';
+	} elsif ($_ =~ /--init/i){
+		$mode = 'init';
+	} elsif ($_ =~ /--setproxy/i){
+		$mode = 'set_proxy';
 	} elsif ($_ =~ /--unsetproxy/i){
 		$mode = 'unset_proxy';
 	}
@@ -54,7 +56,10 @@ if(!defined $user->{password} || $user->{password} eq ''){
 	$config_flg = 0;
 }
 
-if($config_flg == 0){
+if($mode eq 'init'){
+	config_mc2wifi($user);
+	$mode = 'default';
+} elsif($config_flg == 0){
 	print "\nWould you configration in now ? [y/n]: ";
 	my $ans = <STDIN>;
 	if($ans =~ /y/i){
