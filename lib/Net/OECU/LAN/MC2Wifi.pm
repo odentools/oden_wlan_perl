@@ -7,6 +7,8 @@ package Net::OECU::LAN::MC2Wifi;
 use strict;
 use warnings;
 
+use base 'Net::OECU::LAN::Base';
+
 use URI;
 use LWP::UserAgent;
 use Data::Dumper;
@@ -150,13 +152,7 @@ sub login {
 # logout() - Logout from Wlannet
 sub logout {
 	my $self = shift;
-	
-	$self->{ua}->post('https://192.168.4.252/logout.html',
-		'userStatus' => 1,
-		'Logout' => 'Logout',
-	);
-	
-	return 1;
+	die "Not support logout on this VLAN."
 }
 
 # is_logged_in() - Check currently logged-in. Return: 1 = true, 0 = false, -1 = other network
@@ -187,17 +183,6 @@ sub is_logged_in {
 	}
 }
 
-sub _detect_proxy_conf_env {
-	my $self = shift;
-	my $conf_env = "gsettings";
-	eval {
-		`gsettings help`;
-	}; if($@){ 
-		$conf_env = "gconftool-2";
-	};
-	return $conf_env;
-}
-
 # env_set_proxy() - Set the proxy to ENV
 sub env_set_proxy {
 	my $self = shift;
@@ -205,7 +190,7 @@ sub env_set_proxy {
 	my $proxy_host = '172.25.250.41';
 	my $proxy_port = '8080';
 
-	my $conf_env = $self->_detect_proxy_conf_env();
+	my $conf_env = $self->detect_proxy_conf_env();
 
 	if($conf_env eq 'gsettings'){
 		`gsettings set org.gnome.system.proxy mode \"manual\"`;
@@ -234,7 +219,7 @@ sub env_unset_proxy {
 	my $proxy_host = '';
 	my $proxy_port = '';
 
-	my $conf_env = $self->_detect_proxy_conf_env();
+	my $conf_env = $self->detect_proxy_conf_env();
 
 	if($conf_env eq 'gsettings'){
 		`gsettings set org.gnome.system.proxy mode \"none\"`;
@@ -253,7 +238,8 @@ sub env_unset_proxy {
 		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
 		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
 		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
-	}}
+	}
+}
 
 # _ua_set_proxy
 sub _ua_set_proxy {
