@@ -187,40 +187,73 @@ sub is_logged_in {
 	}
 }
 
+sub _detect_proxy_conf_env {
+	my $self = shift;
+	my $conf_env = "gsettings";
+	eval {
+		`gsettings help`;
+	}; if($@){ 
+		$conf_env = "gconftool-2";
+	};
+	return $conf_env;
+}
+
 # env_set_proxy() - Set the proxy to ENV
 sub env_set_proxy {
 	my $self = shift;
+
 	my $proxy_host = '172.25.250.41';
 	my $proxy_port = '8080';
 
-	my $confpath = '/home/'. getpwuid($>) . '/.gconf';
+	my $conf_env = $self->_detect_proxy_conf_env();
 
-	#`gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type string --set /system/proxy/mode \"manual\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
+	if($conf_env eq 'gsettings'){
+		`gsettings set org.gnome.system.proxy mode \"manual\"`;
+		`gsettings set org.gnome.system.proxy.http host \"$proxy_host\"`;
+		`gsettings set org.gnome.system.proxy.http port \"$proxy_port\"`;
+		`gsettings set org.gnome.system.proxy.https host \"$proxy_host\"`;
+		`gsettings set org.gnome.system.proxy.https port \"$proxy_port\"`;
+		`gsettings set org.gnome.system.proxy.ftp host \"$proxy_host\"`;
+		`gsettings set org.gnome.system.proxy.ftp port \"$proxy_port\"`;
+	} elsif ($conf_env eq 'gconftool-2'){
+		my $confpath = '/home/'. getpwuid($>) . '/.gconf';
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/proxy/mode \"manual\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
+	}
 }
 
 # env_set_proxy() - Unset the proxy to ENV
 sub env_unset_proxy {
 	my $self = shift;
+
 	my $proxy_host = '';
 	my $proxy_port = '';
 
-	my $confpath = '/home/'. getpwuid($>) . '/.gconf';
-	
-	#`gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type string --set /system/http_proxy/host \"\"`;
+	my $conf_env = $self->_detect_proxy_conf_env();
 
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
-	`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
-}
+	if($conf_env eq 'gsettings'){
+		`gsettings set org.gnome.system.proxy mode \"none\"`;
+		#`gsettings set org.gnome.system.proxy.http host \"$proxy_host\"`;
+		#`gsettings set org.gnome.system.proxy.http port \"$proxy_port\"`;
+		#`gsettings set org.gnome.system.proxy.https host \"$proxy_host\"`;
+		#`gsettings set org.gnome.system.proxy.https port \"$proxy_port\"`;
+		#`gsettings set org.gnome.system.proxy.ftp host \"$proxy_host\"`;
+		#`gsettings set org.gnome.system.proxy.ftp port \"$proxy_port\"`;
+	} elsif ($conf_env eq 'gconftool-2'){
+		my $confpath = '/home/'. getpwuid($>) . '/.gconf';
+		`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/proxy/mode \"none\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/host \"$proxy_host\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/host \"$proxy_host\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/host \"$proxy_host\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/http_proxy/port \"$proxy_port\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/https_proxy/port \"$proxy_port\"`;
+		#`gconftool-2 --direct --config-source xml:readwrite:${confpath} --type string --set /system/ftp_proxy/port \"$proxy_port\"`;
+	}}
 
 # _ua_set_proxy
 sub _ua_set_proxy {
