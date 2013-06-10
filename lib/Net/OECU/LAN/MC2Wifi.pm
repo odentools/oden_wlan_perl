@@ -107,7 +107,7 @@ sub login {
 		'submit' => 'Login',
 	});
 	
-	print $login_url."\n";
+	print '[Debug] Login url = '.$login_url."\n";
 
 	unless ($response->is_success) {
 		warn '[Debug] '.$response->as_string."\n";
@@ -143,8 +143,12 @@ sub login {
 			print "\nFALSE\n";
 			print $response->as_string;
 			print "\n";
+			last;
 		}
+		sleep(1);
 	}
+
+	sleep(1);
 
 	return 1;
 }
