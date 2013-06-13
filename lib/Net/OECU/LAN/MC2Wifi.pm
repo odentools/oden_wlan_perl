@@ -260,3 +260,71 @@ sub _ua_unset_proxy {
 }
 
 1;
+
+__END__
+=head1 NAME
+
+Net::OECU::LAN::MC2Wifi - Connect to OECUWifi network
+
+=head1 SYNOPSIS
+
+This module is only support for linux, in currently.
+Also, this module provides switcher to set/unset the proxy for gnome-network.
+
+  use Net::OECU::LAN::MC2Wifi;
+  
+  my $network = Net::OECU::LAN::MC2Wifi->new(
+    'username' => 'ht11a000',
+    'password' => 'hogepiyo',
+  );
+  
+  if ($network->is_logged_in() == 0){ # Not logged-in
+    # Login and set the proxy setting
+    $network->login();
+    $network->env_set_proxy();
+  } elsif ($network->is_logged_in() == 1){ # Already logged-in
+    # Set the proxy setting
+    $network->env_set_proxy();
+  } else { # Other network
+    # Unset the proxy setting
+    $network->env_unset_proxy();
+  }
+
+This project has just launched development (alpha released).
+
+=head1 METHODS
+
+=head2 new ( %params )
+
+Create an instance of this module.
+
+%params:
+
+=over 4
+
+=item * 'username' - Your MC2 user name
+
+=item * 'password' - Your MC2 login password
+
+=back
+
+=head2 login ()
+
+Login to OECUWifi network.
+
+=head2 is_logged_in ()
+
+=head2 env_set_proxy ()
+
+=head2 env_unset_proxy ()
+
+=head1 SEE ALSO
+
+L<https://github.com/odentools/oden_wlan_perl> - Your feedback is very much appreciated.
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2013 OdenTools Project (https://sites.google.com/site/odentools/), Masanori Ohgita (http://ohgita.info/).
+
+This library is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3 (GPL v3).
+
