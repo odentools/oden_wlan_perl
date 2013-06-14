@@ -107,7 +107,7 @@ sub login {
 		'submit' => 'Login',
 	});
 	
-	print '[Debug] Login url = '.$login_url."\n";
+	#warn '[Debug] Login url = '.$login_url."\n";
 
 	unless ($response->is_success) {
 		warn '[Debug] '.$response->as_string."\n";
@@ -120,29 +120,28 @@ sub login {
 			my $redirect_url = $1;
 
 			# Request
-			print "\n Request 2nd redirect... \n";
+			#warn "\n Request 2nd redirect... \n";
 			$response = $self->{ua}->get( $redirect_url );
 		} elsif ($response->as_string =~ /window\.location\.href\=\'\/login([^\']+)\'/) {
 			# Detect final redirect with JavaScript
 			my $redirect_url = $login_url . $1;
 
 			# Request
-			print "\n Request 3rd redirect... \n";
+			#warn "\n Request 3rd redirect... \n";
 			$response = $self->{ua}->get( $redirect_url );
-			print $response->as_string;
+			#warn $response->as_string;
 		} elsif ($response->as_string =~ /window\.location\.href\=\'\/([^\']+)\'/) {
 			# Detect other redirect with JavaScript
 			my $redirect_url = $1;
 
 			# Request
-			print "\n Request other redirect... \n";
+			#warn "\n Request other redirect... \n";
 			$response = $self->{ua}->get( $redirect_url );
-			print $response->as_string;
+			#warn $response->as_string;
 			last;
 		} else {
-			print "\nFALSE\n";
-			print $response->as_string;
-			print "\n";
+			#warn $response->as_string;
+			#warn "\n";
 			last;
 		}
 		sleep(1);
