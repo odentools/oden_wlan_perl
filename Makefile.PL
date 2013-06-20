@@ -5,10 +5,10 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	VERSION		=> '1.00',
-	NAME => 'odenwlan',
+	NAME => 'oden_wlan_perl',
 	DISTNAME => 'oden_wlan_perl',
 	EXE_FILES => [
-		'odenwlan'
+		'bin/odenwlan'
 	],
 	PM => {
 		'lib/Net/OECU/LAN/Base.pm' => '$(INST_LIBDIR)/Net/OECU/LAN/Base.pm',
