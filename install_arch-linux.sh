@@ -33,7 +33,7 @@ if [ $CON_NETWORK -eq 1 ]; then
 elif [ $CON_NETWORK -eq 2 ]; then
 	# If connected with MC2Wifi
 	sudo http_proxy=$PROXY_URL pacman -Syu make perl openssl curl
-	curl -LO http://xrl.us/cpanm
+	http_proxy=$PROXY_URL curl -LO http://xrl.us/cpanm
 	chmod +x cpanm
 	sudo http_proxy=$PROXY_URL LANG=C cpanm Crypt::SSLeay
 fi
