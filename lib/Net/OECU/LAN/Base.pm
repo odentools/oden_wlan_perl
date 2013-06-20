@@ -45,11 +45,11 @@ sub env_unset_proxy {
 # Detect proxy configuration environment on this computer
 sub detect_proxy_conf_env {
 	my $self = shift;
-	my $conf_env = "gsettings";
+	my $conf_env = "gconftool-2";
 	eval {
-		`gsettings help`;
+		`gconftool-2 -v`;
 	}; if($@){ 
-		$conf_env = "gconftool-2";
+		$conf_env = "gsettings";
 	};
 	return $conf_env;
 }
