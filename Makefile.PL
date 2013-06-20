@@ -10,10 +10,10 @@ WriteMakefile(
 	EXE_FILES => [
 		'odenwlan'
 	],
-	PM => [
+	PM => {
 		'lib/Net/OECU/LAN/Base.pm' => '$(INST_LIBDIR)/Net/OECU/LAN/Base.pm',
 		'lib/Net/OECU/LAN/MC2Wifi.pm' => '$(INST_LIBDIR)/Net/OECU/LAN/MC2Wifi.pm'
-	],
+	},
 	test		=> {
 		TESTS => 't/*.t'
 	},
