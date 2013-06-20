@@ -2,30 +2,63 @@
 
 oden_wlan_perl - The automatic login tool and library for OECU WiFi
 
-=head1 REQUIREMENT
+=head1 REQUIREMENTS
+
+This program only supports Linux (such as Ubuntu, Arch Linux, others) in currently.
+
+=head2 Requirements package
+
+These packages are required:
 
 =over 4
 
 =item * perl - 5.1x or later
 
+=item * gnome - 2.x or 3.x (support for proxy setting)
+
 =back
 
-=head1 SYNOPSIS
-
-=head2 Installation
+=head1 INSTALLATION
 
 You can use this script as install or as-is.
 
-=head3 Installation for Ubuntu
+=head2 Installation for Ubuntu
+
+You can install this program and requirements-package by following steps:
 
   $ sudo apt-get install git
   $ git clone git://github.com/odentools/oden_wlan_perl.git
   $ cd oden_wlan_perl/
-  $ bash install_ubuntu.sh
+  $ sh install_ubuntu.sh
+  
+  $ odenwlan --init
+  
+=head2 Installation for Arch Linux
+
+You can install this program and requirements-package by following steps:
+
+  $ sudo pacman -Syu git
+  $ git clone git://github.com/odentools/oden_wlan_perl.git
+  $ cd oden_wlan_perl/
+  $ sh install_arch-linux.sh
   
   $ odenwlan --init
 
-=head2 Initial configuration
+=head2 Manual installation for other linux-distribution
+
+In this case, first, you must install requirements-package by yourself.
+
+Then, please execute the following:
+
+ $ git clone git://github.com/odentools/oden_wlan_perl.git
+ $ cd oden_wlan_perl/
+ $ perl Makefile.PL
+ $ make
+ $ sudo make install
+
+=head1 SYNOPSIS
+
+=head2 Initial (re)configuration
 
   $ odenwlan --init
   
