@@ -47,7 +47,7 @@ sub detect_proxy_conf_env {
 	my $self = shift;
 	my $conf_env = "gsettings";
 	my $pa = eval {
-		`gsettings`;
+		`which gsettings`;
 	}; if($@){ 
 		$conf_env = "gconftool-2";
 	};
