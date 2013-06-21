@@ -58,6 +58,14 @@ Then, please execute the following:
 
 =head1 SYNOPSIS
 
+=head2 Updating
+
+You can update this program, by following steps:
+
+ $ git clone git://github.com/odentools/oden_wlan_perl.git
+ $ cd oden_wlan_perl/
+ $ sh update.sh
+
 =head2 Initial (re)configuration
 
   $ odenwlan --init
