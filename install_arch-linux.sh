@@ -48,9 +48,21 @@ if [ $IS_SUCCESS_MAKE -ne 0 ]; then
 fi
 
 if [ $CON_NETWORK -eq 1 ]; then
-	sudo make install
+	if [ -n "$PERL5LIB" ]; then
+		# If PERL5LIB is defined, install to user directory
+		make install
+	else
+		# Install to system
+		sudo make install
+	fi
 elif  [ $CON_NETWORK -eq 2 ]; then
-	sudo http_proxy=$PROXY_URL make install
+	if [ -n "$PERL5LIB" ]; then
+		# If PERL5LIB is defined, install to user directory
+		http_proxy=$PROXY_URL make install
+	else
+		# Install to system
+		sudo http_proxy=$PROXY_URL make install
+	fi
 fi
 
 echo "Done :)"
