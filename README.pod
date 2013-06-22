@@ -56,8 +56,6 @@ Then, please execute the following:
  $ make
  $ sudo make install
 
-=head1 SYNOPSIS
-
 =head2 Updating
 
 You can update this program, by following steps:
@@ -65,6 +63,12 @@ You can update this program, by following steps:
  $ git clone git://github.com/odentools/oden_wlan_perl.git
  $ cd oden_wlan_perl/
  $ sh update.sh
+
+=head1 SYNOPSIS
+
+=head2 How to use in every day
+
+  $ odenwlan
 
 =head2 Initial (re)configuration
 
@@ -83,10 +87,6 @@ You can update this program, by following steps:
   
   -- Connect to MC2Wifi --
   ~~~~~
-
-=head2 How to use in every day
-
-  $ odenwlan
 
 =head1 COPYRIGHT AND LICENSE
 
