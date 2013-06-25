@@ -23,19 +23,31 @@ if [ $IS_SUCCESS_CON -ne 0 ]; then
 	fi
 fi
 
-echo "依存モジュールをインストールしています..."
+echo "依存パッケージをインストールしています..."
 if [ $CON_NETWORK -eq 1 ]; then
 	# If connected with general network
 	sudo pacman -Syu make perl cpan openssl curl
 	curl -LO http://xrl.us/cpanm
 	chmod +x cpanm
-	sudo LANG=C cpanm Crypt::SSLeay
+	if [ -n "$PERL5LIB" ]; then
+		echo "CPAN modules instal to local directory..."
+		LANG=C cpanm Crypt::SSLeay
+	else
+		echo "CPAN modules instal to system..."
+		sudo LANG=C cpanm Crypt::SSLeay
+	fi
 elif [ $CON_NETWORK -eq 2 ]; then
 	# If connected with MC2Wifi
-	sudo http_proxy=$PROXY_URL pacman -Syu make perl openssl curl
+	sudo http_proxy=$PROXY_URL pacman -Syu make perl cpan openssl curl
 	http_proxy=$PROXY_URL curl -LO http://xrl.us/cpanm
 	chmod +x cpanm
-	sudo http_proxy=$PROXY_URL LANG=C cpanm Crypt::SSLeay
+	if [ -n "$PERL5LIB" ]; then
+		echo "CPAN modules instal to local directory..."
+		http_proxy=$PROXY_URL LANG=C cpanm Crypt::SSLeay
+	else
+		echo "CPAN modules instal to system..."
+		sudo http_proxy=$PROXY_URL LANG=C cpanm Crypt::SSLeay
+	fi
 fi
 
 echo "OdenWlan-perlをインストールしています..."
@@ -50,20 +62,24 @@ fi
 if [ $CON_NETWORK -eq 1 ]; then
 	if [ -n "$PERL5LIB" ]; then
 		# If PERL5LIB is defined, install to user directory
+		echo "Install to user directory..."
 		make install
 	else
 		# Install to system
+		echo "Install to system..."
 		sudo make install
 	fi
 elif  [ $CON_NETWORK -eq 2 ]; then
 	if [ -n "$PERL5LIB" ]; then
 		# If PERL5LIB is defined, install to user directory
+		echo "Install to user directory..."
 		http_proxy=$PROXY_URL make install
 	else
 		# Install to system
+		echo "Install to system..."
 		sudo http_proxy=$PROXY_URL make install
 	fi
 fi
 
-echo "Done :)"
+echo "インストール完了 :)"
 echo "Enjoy browsing! $ odenwlan"
