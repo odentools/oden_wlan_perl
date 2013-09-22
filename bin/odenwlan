@@ -9,7 +9,7 @@
 use strict;
 use warnings;
 
-eval 'use lib "../lib/"';
+eval {use lib "../lib/"};
 use Net::OECU::LAN::MC2Wifi;
 use Config::Pit;
 
@@ -18,6 +18,9 @@ my $mode = 'default';
 my $user = {
 	'username' => '',
 	'password' => '',
+};
+my $opt = {
+	debug => 0
 };
 
 my $config;
@@ -42,6 +45,8 @@ foreach(@ARGV){
 		$mode = 'set_proxy';
 	} elsif ($_ =~ /--unsetproxy/i){
 		$mode = 'unset_proxy';
+	} elsif ($_ eq "--debug" || $_ eq "-d") {
+		$opt->{debug} = 1;
 	}
 }
 
@@ -140,7 +145,7 @@ sub config_mc2wifi {
 # Connect to MC2Wifi and Set proxy
 sub connect_mc2wifi {
 	my ($username, $password) = @_;
-	print "\n-- Connect to MC2Wifi --\n\n";
+	print "\n-- Now connecting --\n\n";
 
 	# Initialize the network module
 	my $network = Net::OECU::LAN::MC2Wifi->new(

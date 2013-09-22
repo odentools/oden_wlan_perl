@@ -16,7 +16,6 @@ use Data::Dumper;
 sub new {
 	my ($class, %hash) = @_;
 	my $self = bless({}, $class);
-	
 	$self->{username} = $hash{username} || die('Not specified username.');
 	$self->{password} = $hash{password} || die('Not specified password.');
 	
@@ -70,7 +69,6 @@ EOF
 # login() - Login to Wlannet
 sub login {
 	my $self = shift;
-
 	# Check url
 	$self->_ua_unset_proxy();
 	my $response = $self->{ua}->get('http://www.osakac.ac.jp/');
@@ -91,57 +89,61 @@ sub login {
 		die '[Error] sip parameter is null.';
 	}
 
+
 	# Select login url
-	my $login_url;
+	my $base_url;
 	if($sip eq '172.25.250.91'){
-		$login_url = 'https://mcwlct1s.mc2ed.sjn.osakac.ac.jp:9998/login';
+		$base_url = 'https://mcwlct1s.mc2ed.sjn.osakac.ac.jp:9998';
 	} elsif($sip eq '172.25.250.92') {
-		$login_url = 'https://mcwlct2s.mc2ed.sjn.osakac.ac.jp:9998/login';
+		$base_url = 'https://mcwlct2s.mc2ed.sjn.osakac.ac.jp:9998';
 	} else {
 		die '[Error] Unknown sip.';
 	}
 
-	$response = $self->{ua}->post( $login_url, {
+	$response = $self->{ua}->post( $base_url.'/login', {
 		'username' => $self->{username},
 		'password' => $self->{password},
 		'submit' => 'Login',
 	});
 	
-	#warn '[Debug] Login url = '.$login_url."\n";
+	$self->debug("Base url : ". ${base_url);
 
 	unless ($response->is_success) {
-		warn '[Debug] '.$response->as_string."\n";
+		$self->debug("Response(NotSuccess): ". $response->as_string);
 		die '[Error] Login error : '.$response->status_line."\n";
 	}
 
 	for(my $redirect = 0; $redirect < 5; $redirect += 1) {
+		$self->debug("Response: ". $response->as_string);
 		if ($response->as_string =~ /window\.location\.href\=\'(http\:\/\/[^\']+)\'/){
 			# Detect second redirect with JavaScript
 			my $redirect_url = $1;
 
+			if($response->as_string =~ /img\.src = \"(.+)\"/) {
+				my $img_url = $1;
+				my $response = $self->{ua}->get( $base_url . $1 );
+				$self->debug("Img Response: ". $response->as_string);
+			}
+
 			# Request
-			#warn "\n Request 2nd redirect... \n";
+			$self->debug("Redirect(A) to: ". $redirect_url);
 			$response = $self->{ua}->get( $redirect_url );
 		} elsif ($response->as_string =~ /window\.location\.href\=\'\/login([^\']+)\'/) {
 			# Detect final redirect with JavaScript
-			my $redirect_url = $login_url . $1;
+			my $redirect_url = $base_url . '/login' . $1;
 
 			# Request
-			#warn "\n Request 3rd redirect... \n";
+			$self->debug("Redirect(B) to: ". $redirect_url);
 			$response = $self->{ua}->get( $redirect_url );
-			#warn $response->as_string;
 		} elsif ($response->as_string =~ /window\.location\.href\=\'\/([^\']+)\'/) {
 			# Detect other redirect with JavaScript
 			my $redirect_url = $1;
 
 			# Request
-			#warn "\n Request other redirect... \n";
+			$self->debug("Redirect(Other) to: ". $redirect_url);
 			$response = $self->{ua}->get( $redirect_url );
-			#warn $response->as_string;
 			last;
 		} else {
-			#warn $response->as_string;
-			#warn "\n";
 			last;
 		}
 		sleep(1);

@@ -13,6 +13,8 @@ use LWP::UserAgent;
 sub new {
 	my ($class, %hash) = @_;
 	my $self = bless({}, $class);
+
+	$self->{debug} = $hash{debug} || undef;
 	
 	die;
 }
@@ -65,6 +67,15 @@ sub _ua_set_proxy {
 # _ua_unset_proxy
 sub _ua_unset_proxy {
 	my $self = shift;
+}
+
+# debug
+sub debug {
+	my $self = shift;
+	my $mes = shift;
+	if($self->{debug}) {
+		warn "[Debug] $mes";
+	}
 }
 
 1;
