@@ -7,6 +7,7 @@ package Net::OECU::LAN::MC2Wifi;
 use strict;
 use warnings;
 
+use lib './';
 use base 'Net::OECU::LAN::Base';
 
 use URI;
@@ -15,7 +16,7 @@ use Data::Dumper;
 
 sub new {
 	my ($class, %hash) = @_;
-	my $self = bless({}, $class);
+	my $self = $class->SUPER::new(%hash);
 	$self->{username} = $hash{username} || die('Not specified username.');
 	$self->{password} = $hash{password} || die('Not specified password.');
 	
@@ -106,7 +107,7 @@ sub login {
 		'submit' => 'Login',
 	});
 	
-	$self->debug("Base url : ". ${base_url);
+	$self->debug("Base url : ". $base_url);
 
 	unless ($response->is_success) {
 		$self->debug("Response(NotSuccess): ". $response->as_string);
@@ -167,6 +168,8 @@ sub is_logged_in {
 	$self->_ua_unset_proxy();
 	my $response = $self->{ua}->get('http://google.com/');
 
+	$self->SUPER::debug("is_logged_in - Request to Google without proxy (If failed, logged-in : \n".$response->as_string);
+
 	if ($response->is_success && $response->title eq '無線LAN 利用者認証ページ') {
 		# Not logged-in
 		return 0;
@@ -174,6 +177,8 @@ sub is_logged_in {
 		# Retry with unset proxy
 		$self->_ua_set_proxy();
 		$response = $self->{ua}->get('http://google.com/');
+
+		$self->debug("is_logged_in - Request to Google with proxy (If failed, logged-in : \n".$response->as_string);
 
 		if ($response->is_error || $response->title eq '無線LAN 利用者認証ページ') {
 			# Not logged-in

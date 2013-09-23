@@ -70,6 +70,14 @@ You can update this program, by following steps:
 
   $ odenwlan
 
+=head2 Debug mode
+
+Debug mode is useful for development.
+
+  $ odenwlan --debug
+
+Please add parameter: "--debug" or "-d".
+
 =head2 Initial (re)configuration
 
   $ odenwlan --init

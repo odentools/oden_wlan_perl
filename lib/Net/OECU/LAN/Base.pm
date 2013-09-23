@@ -7,6 +7,7 @@ package Net::OECU::LAN::Base;
 use strict;
 use warnings;
 
+use Data::Dumper;
 use URI;
 use LWP::UserAgent;
 
@@ -15,8 +16,8 @@ sub new {
 	my $self = bless({}, $class);
 
 	$self->{debug} = $hash{debug} || undef;
-	
-	die;
+
+	return $self;
 }
 
 # login() - Login to Wlannet

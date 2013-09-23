@@ -47,6 +47,8 @@ foreach(@ARGV){
 		$mode = 'unset_proxy';
 	} elsif ($_ eq "--debug" || $_ eq "-d") {
 		$opt->{debug} = 1;
+	} elsif ($_ eq "--help" || $_ eq "-h") {
+		$mode = 'help';
 	}
 }
 
@@ -75,21 +77,31 @@ if($mode eq 'init'){
 	}
 }
 
+# Initialize the network module
+my $network = Net::OECU::LAN::MC2Wifi->new(
+	username => $user->{username},
+	password => $user->{password},
+	debug => $opt->{debug}
+);
+
 if($mode eq 'default') {
 	# Connect
 	eval{
-		connect_mc2wifi($user->{username}, $user->{password});
+		connect_network($network);
 	}; if ($@) { die "[Error] $@\n"; }
 } elsif($mode eq 'proxy-set'){
 	# Set proxy
 	eval{
-		set_proxy_mc2wifi($user->{username}, $user->{password});
+		set_proxy($network);
 	}; if ($@) { die "[Error] $@\n"; }
 }elsif($mode eq 'proxy-unset'){
 	# Unset proxy
-	eval{
-		unset_proxy_mc2wifi($user->{username}, $user->{password});
+	eval{ 
+		unset_proxy($network);
 	}; if ($@) { die "[Error] $@\n"; }
+}elsif($mode eq 'help'){
+	# Help
+	show_help();
 }
 exit;
 
@@ -142,16 +154,10 @@ sub config_mc2wifi {
 	print "You can re-configuration with command: \$ odenwlan.pl --init\n";
 }
 
-# Connect to MC2Wifi and Set proxy
-sub connect_mc2wifi {
-	my ($username, $password) = @_;
+# Connect and set a proxy
+sub connect_network {
+	my $network = shift;
 	print "\n-- Now connecting --\n\n";
-
-	# Initialize the network module
-	my $network = Net::OECU::LAN::MC2Wifi->new(
-		username => $username,
-		password => $password,
-	);
 
 	if($network->is_logged_in() == 1){
 		print "[Info] ログイン済みです。\n";
@@ -176,30 +182,31 @@ sub connect_mc2wifi {
 	return;
 }
 
-# Set proxy for MC2Wifi
-sub set_proxy_mc2wifi {
-	my ($username, $password) = @_;
-	# Initialize the network module
-
-	my $network = Net::OECU::LAN::MC2Wifi->new(
-		username => $username,
-		password => $password,
-	);
-
+# Set a proxy
+sub set_proxy {
+	my $network = shift;
+	
 	# Set proxy
 	$network->env_set_proxy();
 }
 
-# Unset proxy for MC2Wifi
-sub unset_proxy_mc2wifi {
-	my ($username, $password) = @_;
+# Unset a proxy
+sub unset_proxy {
+	my $network = shift;
 	
-	# Initialize the network module
-	my $network = Net::OECU::LAN::MC2Wifi->new(
-		username => $username,
-		password => $password,
-	);
-
 	# Unset proxy
 	$network->env_unset_proxy();
+}
+
+# Show help
+sub show_help {
+	my $self = shift;
+	print <<EOF;
+usage: odenwlan [<mode>] [--help][-d|--debug] [--username=<username>] [--password=<password>] [--init] [--setproxy] [--unsetproxy]
+
+mode:
+	(default)	Connect or setting
+	init		Initialize (setting)
+
+EOF
 }
