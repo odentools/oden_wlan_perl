@@ -4,7 +4,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-	VERSION		=> '1.00',
+	VERSION		=> '1.1.0',
 	NAME => 'oden_wlan_perl',
 	DISTNAME => 'oden_wlan_perl',
 	EXE_FILES => [
