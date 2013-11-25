@@ -18,13 +18,13 @@ WriteMakefile(
 		TESTS => 't/*.t'
 	},
 	PREREQ_PM	=> {
-		'URI' => 0,
-		'Net::SSLeay' => 0,
-		'LWP::UserAgent' => 0,
-		'LWP::Protocol::https' => 0,
-		'Data::Dumper' => 0,
-		'YAML' => 0,
-		'YAML::Syck' => 0,
-		'Config::Pit' => 0,
+		'URI' => 1.60,
+		'Net::SSLeay' => 1.55,
+		'LWP::UserAgent' => 6.05, 
+		'LWP::Protocol::https' => 6.04,
+		'Data::Dumper' => 2.145,
+		'YAML' => 0.85,
+		'YAML::Syck' => 1.27,
+		'Config::Pit' => 0.04,
 	}
 );
