@@ -1,6 +1,9 @@
 Version history for oden_wlan_perl
 https://github.com/odentools/oden_wlan_perl
 
+1.1.1  2013-11-xx
+   - [Fix] Install process for dependencies module.
+
 1.1.0  2013-09-23
    - [Change] Support for deviation of MC2WiFi (2013-09).
    - [Add] help mode.
